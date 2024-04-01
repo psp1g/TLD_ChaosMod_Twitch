@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Twitch Voting Overlay</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #000;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+      }
+      .container {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 20%;
+        text-align: center;
+      }
+      .option {
+        margin: 10px;
+      }
+      .bar {
+        width: 100%;
+        background-color: #333;
+        height: 40px;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .bar-fill {
+        height: 100%;
+        background-color: #00f;
+        transition: width 0.2s ease-in-out;
+        width: 20%;
+      }
+      .bar-fill-secondary {
+        height: 100%;
+        background-color: #007;
+        transition: width 0.2s ease-in-out;
+        width: 0;
+      }
+      .bar-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 14px;
+        color: #fff;
+      }
+      .bar-number {
+        position: absolute;
+        top: 50%;
+        left: 5%;
+        transform: translate(-50%, -50%);
+        font-size: 14px;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="option" id="option1">
+        <div class="bar">
+          <div class="bar-fill" id="barFill1">
+            <div class="bar-fill-secondary" id="barFillSecondary1"></div>
+          </div>
+          <div class="bar-text" id="barText1"></div>
+          <div class="bar-number">1</div>
+        </div>
+      </div>
+      <div class="option" id="option2">
+        <div class="bar">
+          <div class="bar-fill" id="barFill2">
+            <div class="bar-fill-secondary" id="barFillSecondary2"></div>
+          </div>
+          <div class="bar-text" id="barText2"></div>
+          <div class="bar-number">2</div>
+        </div>
+      </div>
+      <div class="option" id="option3">
+        <div class="bar">
+          <div class="bar-fill" id="barFill3">
+            <div class="bar-fill-secondary" id="barFillSecondary3"></div>
+          </div>
+          <div class="bar-text" id="barText3"></div>
+          <div class="bar-number">3</div>
+        </div>
+      </div>
+      <div class="option" id="option4">
+        <div class="bar">
+          <div class="bar-fill" id="barFill4">
+            <div class="bar-fill-secondary" id="barFillSecondary4"></div>
+          </div>
+          <div class="bar-text" id="barText4"></div>
+          <div class="bar-number">4</div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const ws = new WebSocket("ws://127.0.0.1:3050");
+
+      ws.onopen = () => {
+        console.log("Connected to server");
+      };
+
+      ws.onmessage = (e) => {
+        const d = JSON.parse(e.data);
+        console.log(d);
+        if (d.d == "votes") {
+          const votes = d.votes;
+          updateVotes(votes);
+        } else if (d.d == "name") {
+          const names = d.names;
+          updateNames(names);
+        } else if (d.d == "voted") {
+          const votedItem = d.item;
+          lockIn(votedItem);
+        } else if (d.d == "STOP") {
+          location.reload();
+        }
+      };
+
+      function lockIn(votedItem) {
+        // Find the element by name, ignoring the # votes
+        const itemElement = Array.from(
+          document.querySelectorAll(".option .bar-text")
+        ).find((el) => el.textContent.includes(votedItem));
+        // Make the bar color lighter
+        const barFill = itemElement.parentElement.querySelector(".bar-fill");
+        const barFillSecondary = barFill.querySelector(".bar-fill-secondary");
+        console.log(itemElement, barFill);
+        barFill.style.backgroundColor = "#000";
+        barFill.style.width = "100%";
+        barFillSecondary.style.width = "0%";
+      }
+
+      function updateVotes(v) {
+        console.log(v);
+        v.forEach((vote, index) => {
+          console.log(vote);
+          const barFill = document.getElementById(`barFill${index + 1}`);
+          const barFillSecondary = document.getElementById(
+            `barFillSecondary${index + 1}`
+          );
+          const percentage = (vote / Math.max(...v)) * 100;
+          barFill.style.width = `${percentage}%`;
+          barFillSecondary.style.width = `${percentage}%`;
+          const barText = document.getElementById(`barText${index + 1}`); // Added to update text inside bars
+          barText.textContent = `${
+            barText.textContent.split(" (")[0]
+          } (${vote} vote${vote === 1 ? "" : "s"})`; // Update text inside bars with total votes, fix pluralization and prevent duplication
+          if (vote === 0) {
+            barFill.style.width = "0%";
+            barFillSecondary.style.width = "0%";
+          }
+        });
+      }
+
+      function updateNames(n) {
+        console.log(n);
+        n.forEach((vote, index) => {
+          console.log(vote);
+          const barText = document.getElementById(`barText${index + 1}`); // Added to update text inside bars
+          barText.textContent = `${vote}`; // Update text inside bars without "votes"
+
+          const barFill = document.getElementById(`barFill${index + 1}`);
+          barFill.style.backgroundColor = "#00f";
+        });
+      }
+    </script>
+  </body>
+</html>
