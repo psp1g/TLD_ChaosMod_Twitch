@@ -8,9 +8,10 @@ The M_ChaosMod.dll is from https://github.com/psp1g/TLD_ChaosMod_Frame
 4. Double click installMod.bat - This copies the mod file into your mod folder
 5. Double click startMod.bat - This will start the server and overlay
 6. Setup an OBS Browser Source as follows:
-  - URL: http://localhost:3050/
-  - Width: 1920
-  - Height: 1080
+    - URL: http://localhost:3050/
+    - Width: 1920
+    - Height: 1080
+    - You can check "Shutdown sourec when not visible", so you can cycle it on/off, in case something happens.
 7. Launch The Long Drive
 8. In game, press F2 to start/stop the mod. Enjoy!
 
