@@ -3,7 +3,7 @@ The M_ChaosMod.dll is from https://github.com/psp1g/TLD_ChaosMod_Frame
 
 ## Setup instructions
 1. Install this - https://kolbenlp.gitlab.io/WorkshopTLDMods/
-2. Click Code at the top right, click Download ZIP
+2. Click Code at the top right of this page, click Download ZIP
 3. Extract that ZIP anywhere you want
 4. Double click installMod.bat - This copies the mod file into your mod folder
 5. Double click startMod.bat - This will start the server and overlay
